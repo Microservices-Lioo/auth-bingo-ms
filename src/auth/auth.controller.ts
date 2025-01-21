@@ -23,4 +23,9 @@ export class AuthController {
   refreshTkn(@Payload('refresh_token') refresh_token: string) {
     return this.authService.refreshTkn(refresh_token);
   }
+
+  @MessagePattern('verifyTokenAuth')
+  verifyTokenAuth(@Payload('access_token') access_token: string) {
+    return this.authService.verifyTokenAuth(access_token);
+  }
 }

@@ -31,7 +31,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
       password: hash,
       ...data
     });
-    console.log(user);
+    
     const payload = { 
       id: user.id, 
       name: user.name,
@@ -40,6 +40,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
     };
 
     return {
+      user: payload,
       access_token: await this.jwtService.signAsync(payload),
       refresh_token: await this.generateRefreshTkn(user)
     };
@@ -63,6 +64,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
     };
 
     return {
+      user: payload,
       access_token: await this.jwtService.signAsync(payload),
       refresh_token: await this.generateRefreshTkn(user)
     };
@@ -131,6 +133,20 @@ export class AuthService extends PrismaClient implements OnModuleInit {
         expiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7)
       }
     });
+  }
+
+  async verifyTokenAuth(access_token: string) {
+    try {
+      await this.jwtService.verifyAsync(
+        access_token,
+        {
+          secret: envs.JWT_SECRET
+        }
+      );
+      return true;
+    } catch (error) {
+      return false;
+    }
   }
 
 }
