@@ -39,10 +39,10 @@ export class UserService extends PrismaClient implements OnModuleInit {
         email: email
       }      
     });
-
+    
     if ( !user ) throw new RpcException({
       status: HttpStatus.NOT_FOUND,
-      message: `This user with id #${user.id} not found`
+      message: `User not found`
     });
 
     return user;
