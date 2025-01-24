@@ -102,7 +102,8 @@ export class AuthService extends PrismaClient implements OnModuleInit {
     } catch (e) {
       throw new RpcException({
         status: HttpStatus.UNAUTHORIZED,
-        message: `Invalid refresh token`
+        message: `Invalid refresh token`,
+        error: `invalid_refresh_token`
       });
     }    
   }
@@ -145,7 +146,11 @@ export class AuthService extends PrismaClient implements OnModuleInit {
       );
       return true;
     } catch (error) {
-      return false;
+      throw new RpcException({
+        status: HttpStatus.UNAUTHORIZED,
+        message: `Invalid token`,
+        error: `invalid_token`
+      });
     }
   }
 
