@@ -91,9 +91,15 @@ export class UserService extends PrismaClient implements OnModuleInit {
       data: updateUserDto,
       where: {
         id: id
+      },
+      select: {
+        id: true,
+        name: true,
+        lastname: true,
+        email: true
       }
     });
-
+    
     return user;
   }
 

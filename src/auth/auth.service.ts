@@ -70,6 +70,22 @@ export class AuthService extends PrismaClient implements OnModuleInit {
     };
   }
 
+  async updateInfoToken(userId: number) {
+    const user = await this.userService.findOne(userId);
+    
+    const payload = { 
+      id: user.id, 
+      name: user.name,
+      lastname: user.lastname,
+      email: user.email
+    };
+
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+      refresh_token: await this.generateRefreshTkn(user)
+    };
+  }
+
   async refreshTkn(refresh_token: string) {
     try {
       const token = await this.jwtService.verifyAsync(refresh_token, {
