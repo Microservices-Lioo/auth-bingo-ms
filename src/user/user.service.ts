@@ -3,10 +3,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaClient } from '@prisma/client';
 import { RpcException } from '@nestjs/microservices';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService extends PrismaClient implements OnModuleInit {
-
+  
   async onModuleInit() {
     await this.$connect();
   }
@@ -49,9 +50,45 @@ export class UserService extends PrismaClient implements OnModuleInit {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const { id: userId , ...data } =  updateUserDto;
+
+    const userData = await this.findOne(id);
+
+    if ( updateUserDto.email != userData.email) throw new RpcException({
+      status: HttpStatus.NOT_FOUND,
+      message: `User with email: ${updateUserDto.email} not found`
+    });
+
+    const isMatch = await bcrypt.compare(updateUserDto.password, userData.password);
+
+    if ( !isMatch ) throw new RpcException({
+      status: HttpStatus.UNAUTHORIZED,
+      message: `Password is incorrect`
+    });
+
+    if ( updateUserDto.new_password && updateUserDto.repit_new_password ) {
+      if ( updateUserDto.new_password != updateUserDto.repit_new_password ) {
+        throw new RpcException({
+          status: HttpStatus.UNAUTHORIZED,
+          message: `Passwords do not match`
+        });
+      } else {
+        const salt = await bcrypt.genSalt();
+        const hash = await bcrypt.hash(updateUserDto.new_password, salt);
+        updateUserDto.password = hash;
+        delete updateUserDto.new_password;
+        delete updateUserDto.repit_new_password;
+      }     
+    } else {
+      delete updateUserDto.password
+    }
+
+    if (updateUserDto.new_email) {
+      updateUserDto.email = updateUserDto.new_email;
+      delete updateUserDto.new_email;
+    }
+
     const user = await this.user.update({
-      data: data,
+      data: updateUserDto,
       where: {
         id: id
       }
