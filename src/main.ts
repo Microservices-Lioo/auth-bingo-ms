@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { envs } from './config';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { Logger, ValidationPipe } from '@nestjs/common';
+import { AllRpcExceptionsFilter } from './common';
 
 async function bootstrap() {
 
@@ -11,10 +12,9 @@ async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     AppModule,
     {
-      transport: Transport.TCP,
+      transport: Transport.NATS,
       options: {
-        host: 'localhost',
-        port: envs.PORT
+        servers: envs.NATS_SERVERS
       }
     }
   );
@@ -27,6 +27,7 @@ async function bootstrap() {
     })
   );
 
+  app.useGlobalFilters( new AllRpcExceptionsFilter() );
 
   logger.log('MS AUTH running on port ' + envs.PORT );
   await app.listen();

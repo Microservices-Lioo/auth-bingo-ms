@@ -13,12 +13,12 @@ export class UserController {
   }
 
   @MessagePattern('findOneUser')
-  findOne(@Payload('id') id: number) {
+  findOne(@Payload() id: string) {
     return this.userService.findOne(id);
   }
 
   @MessagePattern('findOneUserEmail')
-  findOneEmail(@Payload('email') email: string) {
+  findOneEmail(@Payload() email: string) {
     return this.userService.findOneUserEmail(email);
   }
 
@@ -28,7 +28,12 @@ export class UserController {
   }
 
   @MessagePattern('removeUser')
-  remove(@Payload('id') id: number) {
+  remove(@Payload() id: string) {
     return this.userService.remove(id);
+  }
+
+  @MessagePattern('findAllIdsUser')
+  findAllIds(@Payload() ids: string[]) {
+    return this.userService.findAllIds(ids);
   }
 }

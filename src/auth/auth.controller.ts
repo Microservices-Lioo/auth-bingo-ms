@@ -2,6 +2,8 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { AuthService } from './auth.service';
 import { LoginAuthDto, RegisterAuthDto } from './dto';
+import { IUser } from 'src/common/interfaces';
+import { UserDto } from 'src/common/dto';
 
 @Controller()
 export class AuthController {
@@ -18,12 +20,7 @@ export class AuthController {
     return this.authService.login(loginAuthDto);
   }
 
-  @MessagePattern('updateInfoTokenAuth')
-  updateInfoToken(@Payload() userId: number) {
-    return this.authService.updateInfoToken(userId);
-  }
-
-  @MessagePattern('refreshAuth')
+  @MessagePattern('refreshTokenAuth')
   refreshTkn(@Payload() refresh_token: string) {
     return this.authService.refreshTkn(refresh_token);
   }
@@ -31,5 +28,10 @@ export class AuthController {
   @MessagePattern('verifyTokenAuth')
   verifyTokenAuth(@Payload() access_token: string) {
     return this.authService.verifyTokenAuth(access_token);
+  }
+
+  @MessagePattern('updateTokenInfo')
+  updateTokenInfo(@Payload() user: UserDto) {
+    return this.authService.updateTokenInfo(user);
   }
 }
