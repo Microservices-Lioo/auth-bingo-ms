@@ -57,12 +57,15 @@ cp .env.template .env
 ```
 
 ### 4. Levantar servicios con Docker
+#### PostgreSQL y NATS 
+Ejecutar el archivo docker-compose.yml para ambiente de desarrollo, caso
+contrario ejecutar el docker-compose.prod.yml.
 ```bash
-# PostgreSQL
-docker run -d --name postgres-auth -e POSTGRES_DB=auth_bingo -e POSTGRES_USER=auth_user -e POSTGRES_PASSWORD=auth_password -p 5432:5432 postgres:15
+# Modo desarrollo
+docker compose -f docker-compose.yml up --build
 
-# NATS Server
-docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats
+# Modo de producción
+docker compose -f docker-compose.prod.yml up --build
 ```
 
 ### 5. Iniciar el microservicio
@@ -74,9 +77,14 @@ npm run start:dev
 npm run start:prod
 ```
 
-### 6. Docker en Producción
+## Docker para contenedor único en producción
 ```bash
 docker build -f dockerfile.prod -t auth-ms .
+```
+
+## NATS con Docker
+```bash
+docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats
 ```
 
 ## 🤝 Contribución
@@ -104,9 +112,8 @@ Desarrollado por el equipo **Microservices-Lioo**.
 
 Si tienes problemas o preguntas:
 
-1. Revisa la [documentación](docs/)
-2. Busca en [Issues](https://github.com/Microservices-Lioo/auth-bingo-ms/issues)
-3. Crea un nuevo issue si es necesario
+1. Busca en [Issues](https://github.com/Microservices-Lioo/auth-bingo-ms/issues)
+2. Crea un nuevo issue si es necesario
 
 ---
 
