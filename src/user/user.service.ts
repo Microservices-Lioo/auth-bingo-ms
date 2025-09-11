@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserService extends PrismaClient implements OnModuleInit {
 
-  private readonly logger = new Logger("AUTH-SERVICE");
+  private readonly logger = new Logger("USER-SERVICE");
 
   async onModuleInit() {
     await this.$connect();
