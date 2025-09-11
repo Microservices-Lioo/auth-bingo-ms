@@ -8,6 +8,7 @@ import { UserService } from 'src/user/user.service';
 import { envs } from 'src/config';
 import { ISignJwt } from './interfaces';
 import { UserDto } from 'src/common/dto';
+import { UserRoleService } from 'src/user-role/user-role.service';
 
 @Injectable()
 export class AuthService extends PrismaClient implements OnModuleInit {
@@ -16,7 +17,8 @@ export class AuthService extends PrismaClient implements OnModuleInit {
 
   constructor(
     private jwtService: JwtService,
-    private userService: UserService
+    private userService: UserService,
+    private userRoleServ: UserRoleService,
   ) {
     super();
   }
@@ -45,11 +47,14 @@ export class AuthService extends PrismaClient implements OnModuleInit {
       code: 'ALREADY_USER',
     });
 
+    // Creación de usuario
     user = await this.userService.create({
       password: hash,
-      ...data,
-      roles: ['hola']
+      ...data
     });
+
+    // Asignar default rol
+    await this.userRoleServ.create({userId: user.id});
 
     const payload = {
       id: user.id,

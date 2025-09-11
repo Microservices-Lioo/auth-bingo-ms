@@ -1,6 +1,8 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { CreateUserRoleDto, RemoveUserRoleDto } from './dts';
+import { RoleService } from 'src/role/role.service';
+import { ERoles } from 'src/role/enums';
 
 @Injectable()
 export class UserRoleService extends PrismaClient implements OnModuleInit {
@@ -11,10 +13,21 @@ export class UserRoleService extends PrismaClient implements OnModuleInit {
         this.logger.log("Database connected")
     }
 
+    constructor(private readonly roleServ: RoleService) {super();}
+
     //* Crear un rol para un usuario
     async create(create: CreateUserRoleDto) {
+        let { userId, roleId } = create;
+        if (!roleId) {
+            const roles = await this.roleServ.findAll();
+            const defaultRole = roles.find( role => ERoles.USER === role.name);
+            roleId = defaultRole.id;
+        }
+
         return await this.userRole.create({
-            data: create
+            data: {
+                userId, roleId
+            }
         });
     }
 

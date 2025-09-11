@@ -18,8 +18,4 @@ export class CreateUserDto {
     @IsNotEmpty()
     @MinLength(8)
     password: string;
-
-    @IsArray()
-    @ArrayMinSize(1)
-    roles: string[]
 }

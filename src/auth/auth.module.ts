@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { envs } from 'src/config';
 import { UserModule } from 'src/user/user.module';
 import { NatsModule } from 'src/transport/nats.module';
+import { UserRoleModule } from 'src/user-role/user-role.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { NatsModule } from 'src/transport/nats.module';
       signOptions: { expiresIn: envs.JWT_EXPIRATION }
     }),
     UserModule,
-    NatsModule
+    NatsModule,
+    UserRoleModule
   ],
   controllers: [AuthController],
   providers: [AuthService],
