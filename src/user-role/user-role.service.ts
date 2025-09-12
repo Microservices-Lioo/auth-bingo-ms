@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import { CreateUserRoleDto, RemoveUserRoleDto } from './dts';
 import { RoleService } from 'src/role/role.service';
 import { ERoles } from 'src/role/enums';
+import { IRole } from 'src/common/interfaces';
 
 @Injectable()
 export class UserRoleService extends PrismaClient implements OnModuleInit {
@@ -24,15 +25,16 @@ export class UserRoleService extends PrismaClient implements OnModuleInit {
             roleId = defaultRole.id;
         }
 
-        return await this.userRole.create({
+        await this.userRole.create({
             data: {
                 userId, roleId
             }
         });
+        return [ERoles.USER];
     }
 
     //* Obtener los roles de un usuario
-    async findUserRoles(userId: string) {
+    async findUserRoles(userId: string): Promise<ERoles[]> {
         const roles = await this.userRole.findMany({
             where: {userId},
             include: {
@@ -43,7 +45,7 @@ export class UserRoleService extends PrismaClient implements OnModuleInit {
                 }
             }
         });
-        return roles.map( roles => roles.role.name)
+        return roles.map( roles => roles.role.name) as ERoles[]
     }
 
     //* Eliminar un rol de un usuario

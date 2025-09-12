@@ -9,6 +9,7 @@ import { envs } from 'src/config';
 import { ISignJwt } from './interfaces';
 import { UserDto } from 'src/common/dto';
 import { UserRoleService } from 'src/user-role/user-role.service';
+import { IRole } from 'src/common/interfaces';
 
 @Injectable()
 export class AuthService extends PrismaClient implements OnModuleInit {
@@ -54,13 +55,14 @@ export class AuthService extends PrismaClient implements OnModuleInit {
     });
 
     // Asignar default rol
-    await this.userRoleServ.create({userId: user.id});
+    const roles = await this.userRoleServ.create({userId: user.id});
 
     const payload = {
       id: user.id,
       name: user.name,
       lastname: user.lastname,
-      email: user.email
+      email: user.email,
+      roles
     };
 
     return {
@@ -99,11 +101,15 @@ export class AuthService extends PrismaClient implements OnModuleInit {
       code: 'INVALID_CREDENTIALS',
     });
 
+    // Obtener los roles
+    const roles = await this.userRoleServ.findUserRoles(user.id);
+
     const payload = {
       id: user.id,
       name: user.name,
       lastname: user.lastname,
-      email: user.email
+      email: user.email,
+      roles
     };
 
     return {
@@ -148,11 +154,15 @@ export class AuthService extends PrismaClient implements OnModuleInit {
       code: 'TOKEN_EXPIRED'
     });
 
+     // Obtener los roles
+    const roles = await this.userRoleServ.findUserRoles(token.id);
+
     const payload = {
       id: token.id,
       name: token.name,
       lastname: token.lastname,
-      email: token.email
+      email: token.email,
+      roles
     };
 
     return {
@@ -202,7 +212,10 @@ export class AuthService extends PrismaClient implements OnModuleInit {
 
   //* Actualizar token
   async updateTokenInfo(user: UserDto) {
-    const payload = {...user}
+    // Obtener los roles
+    const roles = await this.userRoleServ.findUserRoles(user.id);
+
+    const payload = {roles, ...user}
     return {
       access_token: await this.signJwt(payload),
       refresh_token: await this.generateRefreshTkn(payload)
