@@ -88,7 +88,7 @@ export class AuthService extends PrismaClient implements OnModuleInit {
     });
     
     if (!user.isActive) throw new RpcException({
-      status: HttpStatus.UNAUTHORIZED,
+      status: HttpStatus.FORBIDDEN,
       message: `Cuenta eliminada`,
       code: 'UNAUTHORIZED',
     });
